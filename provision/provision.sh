@@ -604,6 +604,35 @@ phpmyadmin_setup() {
   cp "/srv/config/phpmyadmin-config/config.inc.php" "/srv/www/default/database-admin/"
 }
 
+wordpress_lokalhero() {
+  # Install and configure the latest stable version of WordPress
+  if [[ ! -d "/srv/www/lokalhero" ]]; then
+    echo "Downloading WordPress Stable, see http://wordpress.org/"
+    cd /srv/www/
+    curl -L -O "https://wordpress.org/latest.tar.gz"
+    noroot tar -xvf latest.tar.gz
+    mv wordpress lokalhero
+    rm latest.tar.gz
+    cd /srv/www/lokalhero
+    echo "Configuring WordPress Stable for LokalHero..."
+    noroot wp core config --dbname=wordpress_lokalhero --dbuser=wp --dbpass=wp --quiet --extra-php <<PHP
+// Match any requests made via xip.io.
+if ( isset( \$_SERVER['HTTP_HOST'] ) && preg_match('/^(dev.lokalhero.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(.xip.io)\z/', \$_SERVER['HTTP_HOST'] ) ) {
+define( 'WP_HOME', 'http://' . \$_SERVER['HTTP_HOST'] );
+define( 'WP_SITEURL', 'http://' . \$_SERVER['HTTP_HOST'] );
+}
+
+define( 'WP_DEBUG', true );
+PHP
+    echo "Installing LokalHero Stable..."
+    noroot wp core install --url=dev.lokalhero.com --quiet --title="LokalHero Dev" --admin_name=admin --admin_email="admin@local.dev" --admin_password="password"
+  else
+    echo "Updating LokalHero Stable..."
+    cd /srv/www/lokalhero
+    noroot wp core upgrade
+  fi
+}
+
 wordpress_default() {
   # Install and configure the latest stable version of WordPress
   if [[ ! -d "/srv/www/wordpress-default" ]]; then
@@ -811,6 +840,7 @@ wordpress_default
 wpsvn_check
 wordpress_trunk
 wordpress_develop
+wordpress_lokalhero
 
 # VVV custom site import
 echo " "
