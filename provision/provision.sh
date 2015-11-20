@@ -847,6 +847,18 @@ echo " "
 echo "VVV custom site import"
 custom_vvv
 
+# Set php.ini
+upload_max_filesize=240M
+post_max_size=100M
+max_input_time=223
+max_execution_time=600
+memory_limit=256M
+
+for key in upload_max_filesize post_max_size max_execution_time max_input_time memory_limit
+do
+    sed -i "s/^\($key\).*/\1 $(eval echo \${$key})/" /etc/php5/cli/php.ini
+done
+
 #set +xv
 # And it's done
 end_seconds="$(date +%s)"
