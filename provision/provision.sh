@@ -614,18 +614,18 @@ wordpress_lokalhero() {
     mv wordpress lokalhero
     rm latest.tar.gz
     cd /srv/www/lokalhero
-    echo "Configuring WordPress Stable for LokalHero..."
+    echo "Configuring WordPress local for LokalHero..."
     noroot wp core config --dbname=wordpress_lokalhero --dbuser=wp --dbpass=wp --quiet --extra-php <<PHP
 // Match any requests made via xip.io.
-if ( isset( \$_SERVER['HTTP_HOST'] ) && preg_match('/^(dev.lokalhero.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(.xip.io)\z/', \$_SERVER['HTTP_HOST'] ) ) {
+if ( isset( \$_SERVER['HTTP_HOST'] ) && preg_match('/^(local.lokalhero.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(.xip.io)\z/', \$_SERVER['HTTP_HOST'] ) ) {
 define( 'WP_HOME', 'http://' . \$_SERVER['HTTP_HOST'] );
 define( 'WP_SITEURL', 'http://' . \$_SERVER['HTTP_HOST'] );
 }
 
 define( 'WP_DEBUG', true );
 PHP
-    echo "Installing LokalHero Stable..."
-    noroot wp core install --url=dev.lokalhero.com --quiet --title="LokalHero Dev" --admin_name=admin --admin_email="admin@local.dev" --admin_password="password"
+    echo "Installing LokalHero local..."
+    noroot wp core install --url=local.lokalhero.com --quiet --title="LokalHero local" --admin_name=admin --admin_email="admin@local.dev" --admin_password="password"
   else
     echo "Updating LokalHero Stable..."
     cd /srv/www/lokalhero
